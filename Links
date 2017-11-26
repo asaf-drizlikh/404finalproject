@@ -4,3 +4,4 @@ https://rstudio-pubs-static.s3.amazonaws.com/74248_3bd99f966ed94a91b36d39d8f21e3
 https://www.r-bloggers.com/an-example-of-social-network-analysis-with-r-using-package-igraph/
 dependencies: also installing the dependencies ‘irlba’, ‘pkgconfig’
 
+http://think-like-a-git.net/sections/graph-theory/directed-versus-undirected-graphs.html

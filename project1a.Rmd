@@ -15,7 +15,7 @@ and whether or not they have made it into the baseball hall of fame, which is th
 
 
 
-Basic arguments of igraph functions:
+Basic arguments of graph function:
 
 --Types of basic plot functions:: There are several ways which a plot can be created in this package. One method uses 
  'graph_from_literal'. This function requires a formula which shows each vertex and its connection to other vertices in the plot.
@@ -29,9 +29,10 @@ Basic arguments of igraph functions:
 --Directed/Undirected:: There are two main different types of iGraphs. The first is undirected and the other is directed; Undirected means
  that the edges don't specify a direction for the connection between verticies. Directed graphs specify a single path between verticies.
  By default, the 'directed' arguement is TRUE.
+--Simplify: This argument takes TRUE or FALSE as its input (TRUE by default). If the value is TRUE, then the graph will not allow and edge 
+ to connect both of its endpoints to a single vertex. A simplified graph also prevents multiple edges; this means that it will prevent two
+ edges from having identical endpoints.
 
-
-library(igraph)
 
 Basic iGraph functions:
 -graph or make_graph

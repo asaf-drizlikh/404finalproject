@@ -1,0 +1,50 @@
+---
+title: "Project1b"
+author: "Steve"
+date: "November 27, 2017"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(igraph)
+nodes = read.csv('Dataset1-Media-Example-NODES.csv')
+edges = read.csv('Dataset1-Media-Example-EDGES.csv')
+dirnet = graph_from_data_frame(edges,nodes,directed = T)
+undirnet = graph_from_data_frame(edges,nodes,directed = F)
+```
+
+```{r}
+plot(dirnet)
+```
+
+```{r}
+plot(dirnet,vertex.color = 'yellow', vertex.frame.color = 'orange',vertex.shape = 'sphere',vertex.size = 12.5, vertex.label = nodes$media, vertex.label.font = 3 , vertex.label.cex = .75,vertex.label.color = 'black',vertex.label.dist = 1, vertex.label.degree = -pi/2,edge.color = 'red', edge.arrow.size = .25,edge.arrow.width = .5,edge.lty = 'dotted',edge.curved = 1, main = 'Directed Network')
+```
+
+```{r}
+plot(undirnet)
+```
+
+```{r}
+plot(undirnet,vertex.color = 'purple', vertex.frame.color = 'blue',vertex.shape = 'square',vertex.size = 10, vertex.label = nodes$media, vertex.label.font = 2 , vertex.label.cex = .75,vertex.label.color = 'black',vertex.label.dist = 1, vertex.label.degree = -pi/2,edge.color = 'blue', edge.lty = 'twodash',edge.curved = 0,main = 'Undirected Network')
+```
+
+```{r}
+plot(dirnet, vertex.size = nodes$audience.size,edge.width = edges$weight)
+plot(undirnet,vertex.size = nodes$audience.size,edge.width = edges$weight)
+```
+
+```{r}
+V(dirnet)$size = nodes$audience.size/2
+V(undirnet)$size = nodes$audience.size/2
+E(dirnet)$width = edges$weight/5
+E(undirnet)$width = edges$weight/5
+
+plot(dirnet, vertex.size = nodes$audience.size/2, vertex.color = 'purple', vertex.label = nodes$media,vertex.label.font = 2, vertex.label.cex = .5, vertex.label.color = 'black',vertex.label.dist = 0,edge.width = edges$weight/5,edge.color = 'blue', edge.arrow.width = 0, main = 'Directed Network' )
+plot(undirnet, vertex.size = nodes$audience.size/2, vertex.color = 'purple', vertex.label = nodes$media,vertex.label.font = 2, vertex.label.cex = .5, vertex.label.color = 'black',vertex.label.dist = 0,edge.width = edges$weight/5,edge.color = 'blue', edge.arrow.width = 0, main = 'Undirected Network' )
+```

@@ -1,0 +1,101 @@
+The R package 'igraph' allows for graphs to be generated using algorithms and 
+improves the ability of R to handle extremely large graphs. Another powerful use of iGraph is the 
+direct implementation of data frames as graphs.
+
+
+
+Dependencies: 
+The igraph package requires that irlba and pkgconfig
+
+
+
+Data Set:
+The data set used to demonstrate the capabilites of igraph contains various statistics on over 1000 baseball players
+and whether or not they have made it into the baseball hall of fame, which is the variable of interest.
+
+
+
+Basic arguments of igraph functions:
+
+--Types of basic plot functions:: There are several ways which a plot can be created in this package. One method uses 
+ 'graph_from_literal'. This function requires a formula which shows each vertex and its connection to other vertices in the plot.
+ A useful feature of igraph is the ability to directly convert a data frame to a graph, using the 'graph_from_data_frame' function.
+ Other functions are 'graph_from_edgelist', and 'graph_from_adjacency_matrix'.
+ 
+--Vertices/Edges: Verticies are points within the graph, and edges are the lines which connect each vertex. The basic graph function
+ allows the number of verticies to be specified. Alternatively, some igraph functions allow a dataframe or list of vertices and/or edges to  
+ be passed into the function to create a graph.
+ 
+--Directed/Undirected:: There are two main different types of iGraphs. The first is undirected and the other is directed; Undirected means
+ that the edges don't specify a direction for the connection between verticies. Directed graphs specify a single path between verticies.
+ By default, the 'directed' arguement is TRUE.
+
+
+library(igraph)
+
+Basic iGraph functions:
+-graph or make_graph
+-vertex_attr
+-degree
+-add.edges
+-add.vertices
+-delete.edges
+-delete.vertices
+
+Basic graph:
+```{r}
+library(igraph)
+group <- graph( edges=c('A','B', 'B','C', 'C','D', 'D','A'))
+plot(group)
+```
+
+-directed vs undirected plots
+```{r}
+group1 <- graph( edges=c(1,2, 2,3, 3,4, 4,1), directed=F ) 
+plot(group1)
+group2 <- graph( edges=c(1,2, 2,3, 3,4, 4,1), directed=T)
+plot(group2)
+```
+
+The parameter n can specify the number of vertices for a graph when the edges are numeric and will affect the plot
+when n is at least equal to the number of edges specified
+```{r}
+group3 <- graph(edges=c(1,2, 2,3, 3,4, 4,1), n=6)
+plot(group3)
+group4 <- graph(edges=c(1,2, 2,3, 3,4, 4,1), n=3)
+plot(group4) # produces same result as first graphs
+```
+
+Plot generated from a data frame:
+```{r}
+edges = data.frame(x = c('A','B','C','D'), y = c('B','C','D','A'))
+graph1 <- graph_from_data_frame(edges)
+plot(graph1)
+```
+
+
+Plot generated from graph_from_literal:
+```{r}
+graph2 <- graph_from_literal( "+" -- "-", "*" -- "/", "%" -- "&" )
+plot(graph2)
+```
+
+
+Plot generated from edgelist
+```{r}
+#graph3 <- graph_from_edgelist()
+#plot(graph3)
+```
+
+
+Plot generated from adjacency matrix
+```{r}
+#graph4<- graph_from_adjacency_matrix()
+#plot(graph4)
+```
+
+
+Additional example plots
+ring plot
+
+

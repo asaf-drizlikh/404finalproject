@@ -82,21 +82,56 @@ plot(graph2)
 ```
 
 
-Plot generated from edgelist
+Plot generated from edgelist:
 ```{r}
-#graph3 <- graph_from_edgelist()
-#plot(graph3)
+edgelist = matrix(c(1, 2, 3, 4, 5, 6), ncol = 2, byrow = TRUE)
+graph3 <- graph_from_edgelist(edgelist, directed = FALSE)
+plot(graph3)
 ```
 
 
-Plot generated from adjacency matrix
+Plot generated from adjacency matrix:
+ Note: This matrix must be square.
+ 
 ```{r}
-#graph4<- graph_from_adjacency_matrix()
-#plot(graph4)
+adjm <- matrix(rnorm(100,0,1), nrow=10, ncol=10)
+graph4<- graph_from_adjacency_matrix(adjmatrix = adjm, mode="undirected")
+plot(graph4)
 ```
 
 
-Additional example plots
-ring plot
+Additional Example Plots:
 
+-Empty Plot:
+```{r}
+emptyGraph <- make_empty_graph(50)
+plot(emptyGraph, vertex.size=20)
+```
+
+-Full Graph:
+```{r}
+fg <- make_full_graph(40)
+plot(fg, vertex.size=10, vertex.label=NA)
+```
+
+
+-Simple Star Graph:
+```{r}
+st <- make_star(40)
+plot(st, vertex.size=10, vertex.label=NA) 
+```
+
+
+-Tree Graph:
+```{r}
+tr <- make_tree(40, children = 3, mode = "undirected")
+plot(tr, vertex.size=10, vertex.label=NA) 
+```
+
+
+-Ring Graph:
+```{r}
+rn <- make_ring(40)
+plot(rn, vertex.size=10, vertex.label=NA)
+```
 

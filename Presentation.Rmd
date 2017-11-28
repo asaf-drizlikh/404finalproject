@@ -1,21 +1,22 @@
 ---
 title: "igraph Package"
+author: 'Asaf, Steve, Xin'
 output: html_document
 ---
 The R package 'igraph' allows for graphs to be generated using algorithms and 
 improves the ability of R to handle extremely large graphs. Another powerful use of iGraph is the 
-direct implementation of data frames as graphs.
+direct implementation of data frames as graphs. Primarily, igraph can be used for the analysis of network theory.
 
 
 
 Dependencies: 
-The igraph package requires that irlba and pkgconfig
+The igraph package requires that irlba and pkgconfig ##add more info
 
 
 
-Data Set:
-The data set used to demonstrate the capabilites of igraph contains various statistics on over 1000 baseball players
-and whether or not they have made it into the baseball hall of fame, which is the variable of interest.
+Data Set: The data used to demonstrate the functionality of igraph comes from networks of media outlets and their audience sizes.
+
+Source: http://kateto.net/networks-r-igraph (from section 3.1)
 
 
 
@@ -33,124 +34,180 @@ Basic arguments of graph function:
 --Directed/Undirected:: There are two main different types of iGraphs. The first is undirected and the other is directed; Undirected means
  that the edges don't specify a direction for the connection between verticies. Directed graphs specify a single path between verticies.
  By default, the 'directed' arguement is TRUE.
+ 
 --Simplify: This argument takes TRUE or FALSE as its input (TRUE by default). If the value is TRUE, then the graph will not allow and edge 
  to connect both of its endpoints to a single vertex. A simplified graph also prevents multiple edges; this means that it will prevent two
  edges from having identical endpoints.
 
 
 Basic iGraph functions:
+
 -graph or make_graph
+
 -vertex_attr
+
 -degree
+
 -add.edges
+
 -add.vertices
+
 -delete.edges
+
 -delete.vertices
 
-Basic graph:
-```{r}
+
+```{r, message=FALSE}
 library(igraph)
 group <- graph( edges=c('A','B', 'B','C', 'C','D', 'D','A'))
-plot(group)
+plot(group, main='Basic Graph')
 ```
 
--directed vs undirected plots
+Directed vs Undirected plots
 ```{r}
-group1 <- graph( edges=c(1,2, 2,3, 3,4, 4,1), directed=F ) 
-plot(group1)
+par(mfrow=c(1,2))
+
+group1 <- graph( edges=c(1,2, 2,3, 3,4, 4,1), directed=F) 
+plot(group1,main = 'Undirected')
 group2 <- graph( edges=c(1,2, 2,3, 3,4, 4,1), directed=T)
-plot(group2)
+plot(group2,main='Directed')
 ```
+
+
 
 The parameter n can specify the number of vertices for a graph when the edges are numeric and will affect the plot
 when n is at least equal to the number of edges specified
 ```{r}
+par(mfrow=c(1,2))
+
 group3 <- graph(edges=c(1,2, 2,3, 3,4, 4,1), n=6)
 plot(group3)
 group4 <- graph(edges=c(1,2, 2,3, 3,4, 4,1), n=3)
-plot(group4) # produces same result as first graphs
+plot(group4) # produces same result as first graph
 ```
+
+Demonstrations of Basic Functions:
+
+-vertex attributes
+```{r}
+
+```
+
+
+-add vertex/edge:
+```{r}
+par(mfrow=c(1,2))
+
+group <- graph(edges=c(1,2, 2,3, 3,4, 4,1))
+plot(group)
+add.vertices(group, 2, color='red')
+plot(group)
+
+```
+
+
+-delete vertex/edge:
+```{r}
+group <- graph(edges=c(1,2, 2,3, 3,4, 4,1), n=6)
+plot(group)
+```
+
+
 
 Plot generated from a data frame:
 ```{r}
 edges = data.frame(x = c('A','B','C','D'), y = c('B','C','D','A'))
 graph1 <- graph_from_data_frame(edges)
-plot(graph1)
+plot(graph1,main='From Dataframe')
 ```
 
 
 Plot generated from graph_from_literal:
 ```{r}
+par(mfrow=c(1,2))
+
 graph2 <- graph_from_literal( "+" -- "-", "*" -- "/", "%" -- "&" )
-plot(graph2)
+plot(graph2,main='From Literal')
+graph2 <- graph_from_literal( "+" -+ "-", "*" -+ "/", "%" -+ "&" )
+plot(graph2,main='From Literal - Directed')
 ```
 
 
 Plot generated from edgelist:
 ```{r}
 edgelist = matrix(c(1, 2, 3, 4, 5, 6), ncol = 2, byrow = TRUE)
+edgelist
 graph3 <- graph_from_edgelist(edgelist, directed = FALSE)
-plot(graph3)
+plot(graph3,main='From Edgelist')
 ```
 
 
 Plot generated from adjacency matrix:
- Note: This matrix must be square.
- 
+ Note: This matrix must be square. The dimensions of the adjacency matrix determine the number of vertices. The value of each coordinate 
+ in the matrix determines 
 ```{r}
+par(mfrow=c(1,2))
 adjm <- matrix(rnorm(100,0,1), nrow=10, ncol=10)
 graph4<- graph_from_adjacency_matrix(adjmatrix = adjm, mode="undirected")
-plot(graph4)
-```
+plot(graph4,main='From Adjacency Matrix')
+#origin matrix and adjacency matrix
+adjm 
+get.adjacency((graph4)) 
+#simplified
+graph4 <- simplify(graph4)
+plot(graph4,main='From Adjacency Matrix - Simplified')
+get.adjacency((graph4)) 
 
+```
+In the adjacency matrix, a 1 on the diagonal will generate a loop, while a number greater than 1 will show up as multiple edges between nodes.
 
 Additional Example Plots:
 
--Empty Plot:
 ```{r}
-emptyGraph <- make_empty_graph(50)
-plot(emptyGraph, vertex.size=20)
-```
-
--Full Graph:
-```{r}
-fg <- make_full_graph(40)
-plot(fg, vertex.size=10, vertex.label=NA)
-```
-
-
--Simple Star Graph:
-```{r}
-st <- make_star(40)
-plot(st, vertex.size=10, vertex.label=NA) 
-```
-
-
--Tree Graph:
-```{r}
-tr <- make_tree(40, children = 3, mode = "undirected")
-plot(tr, vertex.size=10, vertex.label=NA) 
-```
-
-
--Ring Graph:
-```{r}
-rn <- make_ring(40)
-plot(rn, vertex.size=10, vertex.label=NA)
-```
-
-###
-
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+emptyGraph <- make_empty_graph(20)
+plot(emptyGraph, vertex.size=20, main = 'Empty Graph')
 ```
 
 ```{r}
-nodes = read.csv('Dataset1-Media-Example-NODES.csv')
-edges = read.csv('Dataset1-Media-Example-EDGES.csv')
-dirnet = graph_from_data_frame(edges,nodes,directed = T)
-undirnet = graph_from_data_frame(edges,nodes,directed = F)
+fullGraph <- make_full_graph(10)
+plot(fullGraph, vertex.size=10, vertex.label=NA, main='Full Graph')
+degree(fullGraph)
+get.adjacency(fullGraph)
+```
+
+```{r}
+starGraph <- make_star(20)
+plot(starGraph, vertex.size=10, vertex.label=NA, main='Star Graph') 
+degree(starGraph)
+get.adjacency(starGraph)
+```
+
+```{r}
+treeGraph <- make_tree(20, children = 3, mode = "undirected")
+plot(treeGraph, vertex.size=10, vertex.label=NA, main='Tree Graph') 
+get.adjacency(treeGraph)
+```
+
+```{r}
+ringGraph <- make_ring(20)
+plot(ringGraph, vertex.size=10, vertex.label=NA, main='Ring Graph')
+degree(ringGraph)
+get.adjacency(ringGraph)
+```
+
+
+#####
+
+
+
+```{r, message = FALSE}
+library(igraph)
+links = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Workshop-NetSciX/master/Dataset1-Media-Example-EDGES.csv')
+nodes = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Workshop-NetSciX/master/Dataset1-Media-Example-NODES.csv')
+links2 = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Workshop-NetSciX/master/Dataset2-Media-User-Example-EDGES.csv')
+nodes2 = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Workshop-NetSciX/master/Dataset2-Media-User-Example-NODES.csv')
+dirnet = graph_from_data_frame(links,nodes,directed = T)
+undirnet = graph_from_data_frame(links,nodes,directed = F)
 ```
 
 ```{r}
@@ -170,16 +227,16 @@ plot(undirnet,vertex.color = 'purple', vertex.frame.color = 'blue',vertex.shape 
 ```
 
 ```{r}
-plot(dirnet, vertex.size = nodes$audience.size,edge.width = edges$weight)
-plot(undirnet,vertex.size = nodes$audience.size,edge.width = edges$weight)
+plot(dirnet, vertex.size = nodes$audience.size,edge.width = links$weight,main = 'Directed Network')
+plot(undirnet,vertex.size = nodes$audience.size,edge.width = links$weight, main = 'Undirected Network')
 ```
 
 ```{r}
 V(dirnet)$size = nodes$audience.size/2
 V(undirnet)$size = nodes$audience.size/2
-E(dirnet)$width = edges$weight/5
-E(undirnet)$width = edges$weight/5
+E(dirnet)$width = links$weight/5
+E(undirnet)$width = links$weight/5
 
-plot(dirnet, vertex.size = nodes$audience.size/2, vertex.color = 'purple', vertex.label = nodes$media,vertex.label.font = 2, vertex.label.cex = .5, vertex.label.color = 'black',vertex.label.dist = 0,edge.width = edges$weight/5,edge.color = 'blue', edge.arrow.width = 0, main = 'Directed Network' )
-plot(undirnet, vertex.size = nodes$audience.size/2, vertex.color = 'purple', vertex.label = nodes$media,vertex.label.font = 2, vertex.label.cex = .5, vertex.label.color = 'black',vertex.label.dist = 0,edge.width = edges$weight/5,edge.color = 'blue', edge.arrow.width = 0, main = 'Undirected Network' )
+plot(dirnet, vertex.size = nodes$audience.size/2, vertex.color = 'purple', vertex.label = nodes$media,vertex.label.font = 2, vertex.label.cex = .5, vertex.label.color = 'black',vertex.label.dist = 0,edge.width = links$weight/5,edge.color = 'blue', edge.arrow.width = 0, main = 'Directed Network' )
+plot(undirnet, vertex.size = nodes$audience.size/2, vertex.color = 'purple', vertex.label = nodes$media,vertex.label.font = 2, vertex.label.cex = .5, vertex.label.color = 'black',vertex.label.dist = 0,edge.width = links$weight/5,edge.color = 'blue', edge.arrow.width = 0, main = 'Undirected Network' )
 ```

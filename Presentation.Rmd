@@ -206,6 +206,123 @@ links = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Work
 nodes = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Workshop-NetSciX/master/Dataset1-Media-Example-NODES.csv')
 links2 = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Workshop-NetSciX/master/Dataset2-Media-User-Example-EDGES.csv')
 nodes2 = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Workshop-NetSciX/master/Dataset2-Media-User-Example-NODES.csv')
+
+```
+
+
+# Reading network data from files
+
+--nodes Vertex sequence, the vertices for which the alpha centrality values are returned.(For technical reasons they will be calculated for all vertices, anyway.)
+
+
+```{r}
+head(nodes)
+head(links)
+```
+
+```{r}
+nrow(nodes); length(unique(nodes$id))
+
+nrow(links); nrow(unique(links[,c("from", "to")]))
+```
+
+--aggregate Splits the data into subsets, computes summary statistics for each, and returns the result in a convenient form
+```{r}
+links <- aggregate(links[,3], links[,-3], sum)
+links <- links[order(links$from, links$to),]
+
+colnames(links)[4] <- "weight"
+rownames(links) <- NULL
+```
+
+```{r}
+head(nodes2)
+head(links2)
+```
+We can see that links2 is an adjacency matrix for a two-mode network:
+```{r}
+links2 <- as.matrix(links2)
+dim(links2)
+dim(nodes2)
+
+```
+
+
+
+
+
+# Turning networks into igraph objects
+
+We start by converting the raw data to an igraph network object. Here we use igraph's graph.data.frame function, which takes two data frames: d and vertices.
+
+--d describes the edges of the network. Its first two columns are the IDs of the source and the target node for each edge. The following columns are edge attributes (weight, type, label, or anything else).
+
+--vertices starts with a column of node IDs. Any following columns are interpreted as node attributes.
+
+
+
+```{r}
+net <- graph_from_data_frame(d=links, vertices=nodes, directed=T) 
+class(net)
+```
+
+We also have easy access to nodes, edges, and their attributes with:
+
+```{r}
+E(net)       # The edges of the "net" object
+
+V(net)       # The vertices of the "net" object
+
+E(net)$type  # Edge attribute "type"
+
+V(net)$media # Vertex attribute "media"
+```
+
+Now that we have our igraph network object, let's make a first attempt to plot it.
+
+--simplify   Logical scalar, whether to call simplify on the created graph. By default the graph is simplified, loop and multiple edges are removed.
+```{r}
+plot(net, edge.arrow.size=.4,vertex.label=NA)
+
+net <- simplify(net, remove.multiple = F, remove.loops = T)#removing the loops in the graph
+```
+
+--as_edgelist: Convert a graph to an edge list
+--as_adjacency_matrix: Convert a graph to an adjacency matrix
+--as_data_frame: Creating igraph graphs from data frames or vice-versa
+
+
+```{r}
+#extract an edge list or a matrix from igraph networks
+as_edgelist(net, names=T)
+as_adjacency_matrix(net, attr="weight")
+#Or data frames describing nodes and edges
+as_data_frame(net, what="edges")
+as_data_frame(net, what="vertices")
+```
+
+
+```{r}
+head(nodes2)
+head(links2)
+net2 <- graph_from_incidence_matrix(links2)
+table(V(net2)$type)
+
+net2.bp <- bipartite.projection(net2)
+```
+
+Calculate the projextions manually
+```{r}
+as_incidence_matrix(net2)  %*% t(as_incidence_matrix(net2)) 
+t(as_incidence_matrix(net2)) %*%   as_incidence_matrix(net2)
+plot(net2.bp$proj1, vertex.label.color="black",vertex.label.dist=1,vertex.size=7, vertex.label=nodes2$media[!is.na(nodes2$media.type)])
+
+plot(net2.bp$proj2, vertex.label.color="black",vertex.label.dist=1,
+vertex.size=7, vertex.label=nodes2$media[is.na(nodes2$media.type)])
+```
+
+
+```{r}
 dirnet = graph_from_data_frame(links,nodes,directed = T)
 undirnet = graph_from_data_frame(links,nodes,directed = F)
 ```

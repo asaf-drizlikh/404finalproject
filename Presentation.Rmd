@@ -323,8 +323,8 @@ vertex.size=7, vertex.label=nodes2$media[is.na(nodes2$media.type)])
 
 
 ```{r}
-dirnet = graph_from_data_frame(links,nodes,directed = T)
-undirnet = graph_from_data_frame(links,nodes,directed = F)
+dirnet = simplify(graph_from_data_frame(links,nodes,directed = T))
+undirnet = simplify(graph_from_data_frame(links,nodes,directed = F))
 ```
 
 ```{r}

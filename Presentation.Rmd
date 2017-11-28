@@ -3,15 +3,17 @@ title: "igraph Package"
 author: 'Asaf, Steve, Xin'
 output: html_document
 ---
+```{r,echo=FALSE}
+#section by Asaf
+```
+
 The R package 'igraph' allows for graphs to be generated using algorithms and 
 improves the ability of R to handle extremely large graphs. Another powerful use of iGraph is the 
 direct implementation of data frames as graphs. Primarily, igraph can be used for the analysis of network theory.
 
 
-
-Dependencies: 
-The igraph package requires that irlba and pkgconfig ##add more info
-
+Installation: install.packages(igraph)
+Dependencies: The igraph package requires that irlba and pkgconfig 
 
 
 Data Set: The data used to demonstrate the functionality of igraph comes from networks of media outlets and their audience sizes.
@@ -44,7 +46,7 @@ Basic iGraph functions:
 
 -graph or make_graph
 
--vertex_attr
+-vertex_attr/edge_attr
 
 -degree
 
@@ -86,32 +88,44 @@ group4 <- graph(edges=c(1,2, 2,3, 3,4, 4,1), n=3)
 plot(group4) # produces same result as first graph
 ```
 
-Demonstrations of Basic Functions:
-
--vertex attributes
-```{r}
-
-```
-
+Demonstrations of Other Basic Functions:
 
 -add vertex/edge:
 ```{r}
-par(mfrow=c(1,2))
+par(mfrow=c(1,3))
 
 group <- graph(edges=c(1,2, 2,3, 3,4, 4,1))
 plot(group)
-add.vertices(group, 2, color='red')
+group <- add.vertices(group, 2, color='red')
 plot(group)
-
+group <- add.edges(group, edges=c(6,4, 5,3))
+plot(group)
 ```
 
 
 -delete vertex/edge:
 ```{r}
-group <- graph(edges=c(1,2, 2,3, 3,4, 4,1), n=6)
+par(mfrow=c(1,2))
+
+group <- delete.edges(group, edges=c(6,4))
+plot(group)
+group <- delete.vertices(group, c(5))
 plot(group)
 ```
 
+```{r}
+group <- set_vertex_attr(group, "color", value='green')
+group <- set_vertex_attr(group, "label", value = c('a','b','c','d','e'))
+group <- set_vertex_attr(group, "size", value = 40)
+plot(group)
+
+```
+
+```{r}
+E(group)
+V(group)
+group[]
+```
 
 
 Plot generated from a data frame:
@@ -119,10 +133,11 @@ Plot generated from a data frame:
 edges = data.frame(x = c('A','B','C','D'), y = c('B','C','D','A'))
 graph1 <- graph_from_data_frame(edges)
 plot(graph1,main='From Dataframe')
+get.adjacency(graph1)
 ```
 
 
-Plot generated from graph_from_literal:
+Plot generated from a literal definition:
 ```{r}
 par(mfrow=c(1,2))
 
@@ -139,6 +154,7 @@ edgelist = matrix(c(1, 2, 3, 4, 5, 6), ncol = 2, byrow = TRUE)
 edgelist
 graph3 <- graph_from_edgelist(edgelist, directed = FALSE)
 plot(graph3,main='From Edgelist')
+get.adjacency(graph3)
 ```
 
 
@@ -196,12 +212,16 @@ get.adjacency(ringGraph)
 ```
 
 
+
 #####
+```{r,echo=FALSE}
+#section by Xin
+```
 
 
 
 ```{r, message = FALSE}
-library(igraph)
+
 links = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Workshop-NetSciX/master/Dataset1-Media-Example-EDGES.csv')
 nodes = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Workshop-NetSciX/master/Dataset1-Media-Example-NODES.csv')
 links2 = read.csv('https://raw.githubusercontent.com/kateto/R-igraph-Network-Workshop-NetSciX/master/Dataset2-Media-User-Example-EDGES.csv')
@@ -319,6 +339,11 @@ plot(net2.bp$proj1, vertex.label.color="black",vertex.label.dist=1,vertex.size=7
 
 plot(net2.bp$proj2, vertex.label.color="black",vertex.label.dist=1,
 vertex.size=7, vertex.label=nodes2$media[is.na(nodes2$media.type)])
+```
+
+###
+```{r,echo=FALSE}
+#section by Steve
 ```
 
 

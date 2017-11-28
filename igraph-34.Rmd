@@ -10,11 +10,13 @@ output: html_document
 
 --nodes Vertex sequence, the vertices for which the alpha centrality values are returned.(For technical reasons they will be calculated for all vertices, anyway.)
 
-
+3.1
 ```{r}
 nodes <- read.csv("Dataset1-Media-Example-NODES.csv", header=T, as.is=T)
 
 links <- read.csv("Dataset1-Media-Example-EDGES.csv", header=T, as.is=T)
+head(nodes)
+head(links)
 ```
 
 
@@ -27,8 +29,7 @@ nrow(nodes); length(unique(nodes$id))
 nrow(links); nrow(unique(links[,c("from", "to")]))
 ```
 
-Notice that there are more links than unique from-to combinations. That means we have cases in the data where there are multiple links between the same two nodes. We will collapse all links of the same type between the same two nodes by summing their weights, using aggregate() by "from", "to", & "type". We don't use simplify() here so as not to collapse different link types.
-
+--aggregate Splits the data into subsets, computes summary statistics for each, and returns the result in a convenient form
 ```{r}
 links <- aggregate(links[,3], links[,-3], sum)
 links <- links[order(links$from, links$to),]
@@ -37,18 +38,21 @@ colnames(links)[4] <- "weight"
 rownames(links) <- NULL
 ```
 
-## matrix
-Two-mode or bipartite graphs have two different types of actors and links that go across, but not within each type. Our second media example is a network of that kind, examining links between news sources and their consumers.
+## 3.2 matrix
+
 ```{r}
 nodes2 <- read.csv("Dataset2-Media-User-Example-NODES.csv", header=T, as.is=T)
 
 links2 <- read.csv("Dataset2-Media-User-Example-EDGES.csv", header=T, row.names=1)
+head(nodes2)
+head(links2)
 ```
 We can see that links2 is an adjacency matrix for a two-mode network:
 ```{r}
 links2 <- as.matrix(links2)
 dim(links2)
 dim(nodes2)
+
 ```
 
 
@@ -63,8 +67,8 @@ We start by converting the raw data to an igraph network object. Here we use igr
 
 --vertices starts with a column of node IDs. Any following columns are interpreted as node attributes.
 
---simplify   Logical scalar, whether to call simplify on the created graph. By default the graph is simplified, loop and multiple edges are removed.
 
+4.1
 ```{r}
 library(igraph)
 net <- graph_from_data_frame(d=links, vertices=nodes, directed=T) 
@@ -85,6 +89,7 @@ V(net)$media # Vertex attribute "media"
 
 Now that we have our igraph network object, let's make a first attempt to plot it.
 
+--simplify   Logical scalar, whether to call simplify on the created graph. By default the graph is simplified, loop and multiple edges are removed.
 ```{r}
 plot(net, edge.arrow.size=.4,vertex.label=NA)
 
@@ -97,15 +102,18 @@ net <- simplify(net, remove.multiple = F, remove.loops = T)#removing the loops i
 
 
 ```{r}
+#extract an edge list or a matrix from igraph networks
 as_edgelist(net, names=T)
-as_adjacency_matrix(net, attr="weight")#extract an edge list or a matrix from igraph networks
-
+as_adjacency_matrix(net, attr="weight")
+#Or data frames describing nodes and edges
 as_data_frame(net, what="edges")
-as_data_frame(net, what="vertices")#Or data frames describing nodes and edges
+as_data_frame(net, what="vertices")
 ```
 
-## DataSets
+## 4.2 DataSets
 ```{r}
+head(nodes2)
+head(links2)
 net2 <- graph_from_incidence_matrix(links2)
 table(V(net2)$type)
 

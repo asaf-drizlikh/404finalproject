@@ -1,15 +1,16 @@
-Summarize data, show data source.
+Summarize data, show data source - XIN SU
 
 
-Heatmaps, boxplots
-PCA
-Kmeans, hierarchical clustering 
+Heatmaps, boxplots - STEVE
+PCA                - STEVE
+Kmeans, hierarchical clustering  -XIN SU
 
 
-LDA
-QDA
-Logistic Regression
+LDA -ASAF
+QDA -ASAF
+Logistic Regression -XIN SU & STEVE
+Cross-Validation - ASAF & STEVE
 
-
-ROC Curve
-Confusion Matrix
+ROC Curve  -ASAF
+Confusion Matrix -STEVE & ASAF
+Results - ALL

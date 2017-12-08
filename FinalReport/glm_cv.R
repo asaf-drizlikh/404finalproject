@@ -8,7 +8,9 @@ DTA <- read.csv("hof_all_cp.csv")
 ## Extract a few offensive statistics (numerical variables).
 #num_vars <- c("AB", "OBP", "SF_Nornm", "SLG", "SB_Norm", "SH_Norm")
 #X <- as.matrix(DTA[, num_vars])
-DTA_num <- DTA[, c(4,15,16,17,18)]
+DTA_num <- DTA[, c("HOF", "OBP", "AB", "SF","SLG","SB","SH")]
+DTA_num2 <- DTA[, c("HOF","H","TP","SB","HBP")] #other option
+
 
 ## Variable declarations
 sens = NULL # sensitivity 
@@ -22,7 +24,7 @@ pred = matrix(0, nrow = n, ncol = 19) # matrix for storing predictions
 check = matrix(0, nrow = n, ncol = 19) # matrix for storing the results of LOOCV
 
 
-for (j in 1:19) { # makes a prediction for each threshold value
+for (j in 1:length(thresh_seq)) { # makes a prediction for each threshold value
   # cycles through all data, using excluding one player each time to be used later for the accuracy check
   for (i in 1:n) {
     
@@ -48,7 +50,7 @@ for (j in 1:19) { # makes a prediction for each threshold value
 ## Performs LOOCV
 ## Checks the pred matrix to see which values
 ## were correctly predicted	for each threshold value
-for (j in 1:19) {
+for (j in 1:length(thresh_seq)) {
   predYesRight = 0 # reset number of HOF yes predicted correctly
   predYesWrong = 0 # reset number of HOF yes predicted incorrectly
   predNoRight = 0 # reset number of HOF no predicted correctly

@@ -1,0 +1,68 @@
+---
+title: "404Final"
+author: "Xin Su"
+date: "December 13, 2017"
+output: html_document
+---
+##Introduction
+The MLB Baseball Hall of Fame is a continuously-developing, prestigious collection of highly-skilled baseball players from the 20th century and early 21st century. However, due to the fact that baseball players have many varying skill sets, being placed in this Hall of Fame is largely a subjective achievement, as there are no explicitly definitive qualifications. However, using linear discriminant analysis, a statistical analysis method concerned with retaining qualitative results using quantitative data, we create a predictive model for determining a baseball player's Hall of Fame-related status. 
+```{r}
+mydata <- read.csv("hof.csv")
+
+```
+
+```{r}
+summary(mydata)
+a <- c(1,2,3,5,11)
+mydata[a]<- NULL
+
+```
+
+## Data Preparation
+Prior to clustering data, you may want to remove or estimate missing data and rescale variables for comparability.
+```{r}
+mydata <- na.omit(mydata) # listwise deletion of missing
+mydata <- scale(mydata) # standardize variables
+```
+
+## K-means
+K-means clustering is the most popular partitioning method. It requires the analyst to specify the number of clusters to extract. A plot of the within groups sum of squares by number of clusters extracted can help determine the appropriate number of clusters. The analyst looks for a bend in the plot similar to a scree test in factor analysis. 
+```{r}
+# Determine number of clusters
+wss <- (nrow(mydata)-1)*sum(apply(mydata,2,var))
+for (i in 2:15) wss[i] <- sum(kmeans(mydata, centers=i)$withinss)
+plot(1:15, wss, type="b", xlab="Number of Clusters",ylab="Within groups sum of squares")
+
+
+# K-Means Cluster Analysis
+fit <- kmeans(mydata, 5) # 5 cluster solution
+# get cluster means 
+aggregate(mydata,by=list(fit$cluster),FUN=mean)
+# append cluster assignment
+mydata <- data.frame(mydata, fit$cluster)
+```
+A robust version of K-means based on mediods can be invoked by using pam( ) instead of kmeans( ). The function pamk( ) in the fpc package is a wrapper for pam that also prints the suggested number of clusters based on optimum average silhouette width.
+
+## Hierarchical Agglomerative
+There are a wide range of hierarchical clustering approaches. I have had good luck with Ward's method described below.
+```{r}
+# Ward Hierarchical Clustering
+d <- dist(mydata, method = "euclidean") # distance matrix
+fit <- hclust(d, method="ward") 
+plot(fit) # display dendogram
+groups <- cutree(fit, k=5) # cut tree into 5 clusters
+# draw dendogram with red borders around the 5 clusters 
+rect.hclust(fit, k=5, border="red")
+```
+
+The pvclust( ) function in the pvclust package provides p-values for hierarchical clustering based on multiscale bootstrap resampling. Clusters that are highly supported by the data will have large p values. Interpretation details are provided Suzuki. Be aware that pvclust clusters columns, not rows. Transpose your data before using.
+
+```{r}
+# Ward Hierarchical Clustering with Bootstrapped p values
+library(pvclust)
+fit <- pvclust(mydata, method.hclust="ward",
+   method.dist="euclidean")
+plot(fit) # dendogram with p values
+# add rectangles around groups highly supported by the data
+pvrect(fit, alpha=.95)
+```

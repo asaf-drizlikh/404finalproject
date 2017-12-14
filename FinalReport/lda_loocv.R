@@ -81,11 +81,3 @@ for (j in 1:19) {
   acc[j] = (sens[j] + spec[j]) / 2 # calculation for balanced accuracy
 }
 
-spec2 <- 1-spec
-
-library(ggplot2)
-data <- data.frame(c(spec2, sens))
-roc <- ggplot(data=)+geom_point(size = 2, alpha = 0.7)+
-  labs(title= "ROC curve", 
-       x = "False Positive Rate (1-Specificity)", 
-       y = "True Positive Rate (Sensitivity)")

@@ -2,30 +2,27 @@ dta <- read.csv("hof_all.csv")
 library(MASS)
 
 ## Extract a few offensive statistics (numerical variables).
-#num_vars <- c("AB", "OBP", "SF_Nornm", "SLG", "SB_Norm", "SH_Norm")
-#X <- as.matrix(DTA[, num_vars])
-dta_st <- DTA[, c("HOF", "OBP", "AB", "SF","SLG","SB","SH")]
-#DTA_num2 <- DTA[, c("HOF","H","TP","SB","HBP")] #other option
+dta_st <- DTA[, c("HOF", "OBP", "SF","SLG","SB","SH")]
 
 ## Variable declarations
-sens = NULL # sensitivity 
-spec = NULL # specificity
-acc = NULL # accuracy
-test = NULL # test data
-train = NULL # training data
 thresh_seq = seq(from = .05, to = .95, by = .05) # list of threshold values
 n <- nrow(DTA) # stores number of rows in the data set
-pred = matrix(0, nrow = n, ncol = 19) # matrix for storing predictions
-check = matrix(0, nrow = n, ncol = 19) # matrix for storing the results of LOOCV
 
 lda_out <- lda(HOF ~., data=dta_st, CV = TRUE)
-sens_lda <- spec_lda <- bacc_lda <- ppv_lda <- npv_lda <- sens_lda2 <-NULL
+sens_lda <- spec_lda <- bacc_lda <-NULL
 for(i in 1:length(thresh_seq)) {
   class_lda <- lda_out$posterior[,2] > thresh_seq[i]
-  sens_lda[i] <- mean(class_lda[dta_st$HOF == 'Y'] == TRUE)
+  # filters results by players who are actually in the HOF (Y), then checks if TRUE was predicted. The average of the correct YES predictions defines sensitivity
+  sens_lda[i] <- mean(class_lda[dta_st$HOF == 'Y'] == TRUE) 
+  # filters results by players who are actually NOT in the HOF (N), then checks if FALSE was predicted. The average of the correct YES predictions defines sensitivity
   spec_lda[i] <- mean(class_lda[dta_st$HOF == 'N'] == FALSE)
-  ppv_lda[i] <- mean(dta_st$HOF[class_lda == TRUE] == 'Y')
-  npv_lda[i] <- mean(dta_st$HOF[class_lda == FALSE] == 'N')
-  bacc_lda[i] <- (sens_lda[i] + 3*spec_lda[i]) / 4
-  df1 <- as.data.frame(cbind(sens_lda, spec_lda, ppv_lda, npv_lda, bacc_lda))
+  bacc_lda[i] <- (sens_lda[i] + 3*spec_lda[i]) / 4 # balance accuracy calculation is weighted
+  df1 <- as.data.frame(cbind(sens_lda, spec_lda, bacc_lda))
 }
+
+spec2 <- 1-spec_lda
+roc_dat1<-data.frame(x=spec2,y=sens_lda)
+
+roc1 <- ggplot(roc_dat1) + geom_point(aes(roc_dat1$x,roc_dat1$y),size=2) + labs(title= "LDA ROC Curve", 
+                                                        x = "False Positive Rate (1-Specificity)", 
+                                                        y = "True Positive Rate (Sensitivity)")

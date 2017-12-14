@@ -1,15 +1,12 @@
-
 #imports library for LDA/QDA
-library(MASS)
+library(ggplot2)
 
 ## Load data
 DTA <- read.csv("hof_all.csv")
 
 ## Extract a few offensive statistics (numerical variables).
-#num_vars <- c("AB", "OBP", "SF_Nornm", "SLG", "SB_Norm", "SH_Norm")
-#X <- as.matrix(DTA[, num_vars])
 DTA_num <- DTA[, c("HOF", "OBP", "AB", "SF","SLG","SB","SH")]
-DTA_num2 <- DTA[, c("HOF","H","TP","SB","HBP")] #other option
+
 
 
 ## Variable declarations
@@ -67,7 +64,7 @@ for (j in 1:length(thresh_seq)) {
         predYesWrong <- predYesWrong + 1  
       }
     }
-    if (pred[i,j] == 0) { # if no was predicted
+    else if(pred[i,j] == 0) { # if no was predicted
       if (DTA$HOF[i] == 'N') { # compare to test case
         check[i,j] = 0 # marks prediction as correct
         predNoRight <- predNoRight + 1 # increase count
@@ -83,3 +80,10 @@ for (j in 1:length(thresh_seq)) {
   spec[j] = predNoRight / (predYesWrong + predNoRight) # calculation for specificity 
   acc[j] = (sens[j] + spec[j]) / 2 # calculation for balanced accuracy
 }
+
+spec2 <- 1-spec
+dta<-data.frame(x=spec2,y=sens)
+
+roc <- ggplot(dta) + geom_line(aes(dta$x,dta$y)) + labs(title= "ROC curve", 
+                                                        x = "False Positive Rate (1-Specificity)", 
+                                                        y = "True Positive Rate (Sensitivity)")

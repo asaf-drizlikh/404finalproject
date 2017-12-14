@@ -1,12 +1,11 @@
-#imports library for LDA
+#imports library for LDA and ggplot
+library(ggplot2)
 library(MASS)
 
 ## Load data
 DTA <- read.csv("hof_all.csv")
 
 ## Extract a few offensive statistics (numerical variables).
-#num_vars <- c("AB", "OBP", "SF_Nornm", "SLG", "SB_Norm", "SH_Norm")
-#X <- as.matrix(DTA[, num_vars])
 DTA_num <- DTA[, c("HOF", "OBP", "AB", "SF","SLG","SB","SH")]
 
 ## Variable declarations
@@ -34,7 +33,7 @@ for (j in 1:19) { # makes a prediction for each threshold value
     
     # checks whether posterior probability from LDA is higher
     # than the current threshold value, then makes prediction
-    if (lda_pred$posterior[1] > thresh_seq[j]) { 
+    if (lda_pred$posterior[2] > thresh_seq[j]) { 
       pred[i,j] = 1 # predicts as yes for HOF
     }
     else {
@@ -80,4 +79,16 @@ for (j in 1:19) {
   spec[j] = predNoRight / (predYesWrong + predNoRight) # calculation for specificity 
   acc[j] = (sens[j] + spec[j]) / 2 # calculation for balanced accuracy
 }
+
+
+spec2 <- 1-spec
+dta<-data.frame(x=spec2,y=sens)
+
+roc <- ggplot(dta) + geom_line(aes(dta$x,dta$y)) + labs(title= "ROC curve", 
+                                                x = "False Positive Rate (1-Specificity)", 
+                                                y = "True Positive Rate (Sensitivity)")
+lda_out <- lda(HOF ~., data = train)
+lda_pred <- predict(lda_out, newdata = test)	
+
+#table(lda_pred, DTA$HOF)
 

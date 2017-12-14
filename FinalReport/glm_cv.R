@@ -18,14 +18,16 @@ n <- nrow(DTA) # stores number of rows in the data set
 pred = matrix(0, nrow = n, ncol = 19) # matrix for storing predictions
 check = matrix(0, nrow = n, ncol = 19) # matrix for storing the results of LOOCV
 
-lda_out <- lda(HOF ~., data=dta_st, CV = TRUE)
-sens_lda <- spec_lda <- bacc_lda <- ppv_lda <- npv_lda <- sens_lda2 <-NULL
+fit <- glm(HOF ~., data = train, family = binomial())
+fit_pred <- predict(fit, newdata = test, type = 'response')	
+
+sens_glm <- spec_glm <- bacc_glm <- ppv_glm <- npv_glm <- sens_glm2 <-NULL
 for(i in 1:length(thresh_seq)) {
-  class_lda <- lda_out$posterior[,2] > thresh_seq[i]
-  sens_lda[i] <- mean(class_lda[dta_st$HOF == 'Y'] == TRUE)
-  spec_lda[i] <- mean(class_lda[dta_st$HOF == 'N'] == FALSE)
-  ppv_lda[i] <- mean(dta_st$HOF[class_lda == TRUE] == 'Y')
-  npv_lda[i] <- mean(dta_st$HOF[class_lda == FALSE] == 'N')
-  bacc_lda[i] <- (sens_lda[i] + 3*spec_lda[i]) / 4
-  df1 <- as.data.frame(cbind(sens_lda, spec_lda, ppv_lda, npv_lda, bacc_lda))
+  class_glm <- fit_pred$posterior[,2] > thresh_seq[i]
+  sens_glm[i] <- mean(class_glm[dta_st$HOF == 'Y'] == TRUE)
+  spec_glm[i] <- mean(class_glm[dta_st$HOF == 'N'] == FALSE)
+  ppv_glm[i] <- mean(dta_st$HOF[class_glm == TRUE] == 'Y')
+  npv_glm[i] <- mean(dta_st$HOF[class_glm == FALSE] == 'N')
+  bacc_glm[i] <- (sens_glm[i] + 3*spec_glm[i]) / 4
+  df1 <- as.data.frame(cbind(sens_glm, spec_glm, ppv_glm, npv_glm, bacc_glm))
 }

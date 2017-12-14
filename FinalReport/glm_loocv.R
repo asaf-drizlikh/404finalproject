@@ -3,7 +3,7 @@
 library(MASS)
 
 ## Load data
-DTA <- read.csv("hof_all_cp.csv")
+DTA <- read.csv("hof_all.csv")
 
 ## Extract a few offensive statistics (numerical variables).
 #num_vars <- c("AB", "OBP", "SF_Nornm", "SLG", "SB_Norm", "SH_Norm")
@@ -31,11 +31,11 @@ for (j in 1:length(thresh_seq)) { # makes a prediction for each threshold value
     test <- DTA_num[i,] # uses one element as a test
     train <- DTA_num[-i,] # uses remainder of data elements as training
     
-    # performs lda
+    # glm fit
     fit <- glm(HOF ~., data = train, family = binomial())
     fit_pred <- predict(fit, newdata = test, type = 'response')	
     
-    # checks whether posterior probability from LDA is higher
+    # checks whether posterior probability from glm is higher
     # than the current threshold value, then makes prediction
     if (fit_pred > thresh_seq[j]) { 
       pred[i,j] = 1 # predicts as yes for HOF
@@ -79,7 +79,7 @@ for (j in 1:length(thresh_seq)) {
     }
   }
   
-  sens[j] = predYesRight / (predYesRight + predYesWrong) # calculation for sensitivity 
-  spec[j] = predNoRight / (predNoWrong + predNoRight) # calculation for specificity 
+  sens[j] = predYesRight / (predYesRight + predNoWrong) # calculation for sensitivity 
+  spec[j] = predNoRight / (predYesWrong + predNoRight) # calculation for specificity 
   acc[j] = (sens[j] + spec[j]) / 2 # calculation for balanced accuracy
 }

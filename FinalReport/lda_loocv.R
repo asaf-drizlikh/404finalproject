@@ -1,8 +1,8 @@
-#imports library for LDA/QDA
+#imports library for LDA
 library(MASS)
 
 ## Load data
-DTA <- read.csv("hof_all_cp.csv")
+DTA <- read.csv("hof_all.csv")
 
 ## Extract a few offensive statistics (numerical variables).
 #num_vars <- c("AB", "OBP", "SF_Nornm", "SLG", "SB_Norm", "SH_Norm")
@@ -76,7 +76,16 @@ for (j in 1:19) {
     }
   }
   
-  sens[j] = predYesRight / (predYesRight + predYesWrong) # calculation for sensitivity 
-  spec[j] = predNoRight / (predNoWrong + predNoRight) # calculation for specificity 
+  sens[j] = predYesRight / (predYesRight + predNoWrong) # calculation for sensitivity 
+  spec[j] = predNoRight / (predYesWrong + predNoRight) # calculation for specificity 
   acc[j] = (sens[j] + spec[j]) / 2 # calculation for balanced accuracy
 }
+
+spec2 <- 1-spec
+
+library(ggplot2)
+data <- data.frame(c(spec2, sens))
+roc <- ggplot(data=)+geom_point(size = 2, alpha = 0.7)+
+  labs(title= "ROC curve", 
+       x = "False Positive Rate (1-Specificity)", 
+       y = "True Positive Rate (Sensitivity)")
